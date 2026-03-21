@@ -3,8 +3,11 @@ import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/db";
 import { verifyPassword } from "@/lib/hash";
 import { loginSchema } from "@/lib/validations/usuario.schema";
+import { authConfig } from "./auth.config";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  ...authConfig,
+
   providers: [
     Credentials({
       name: "credentials",
@@ -18,7 +21,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const { username, password } = parsed.data;
 
-        // Cargamos usuario con roles y permisos en una sola query
         const user = await prisma.user.findUnique({
           where: { username },
           include: {
@@ -33,7 +35,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 },
               },
             },
-            graduacion: true,
           },
         });
 
@@ -42,7 +43,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const isValid = await verifyPassword(password, user.password);
         if (!isValid) return null;
 
-        // Extraemos nombres de roles y permisos únicos
         const roles = user.userRoles.map((ur) => ur.role.nombre);
         const permissions = [
           ...new Set(
@@ -64,7 +64,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
 
   callbacks: {
-    // Inyectamos roles y permisos en el JWT
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
@@ -74,7 +73,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
 
-    // Exponemos roles y permisos en la sesión del cliente
     async session({ session, token }) {
       session.user.id = token.id as string;
       session.user.roles = (token.roles as string[]) ?? [];
@@ -83,13 +81,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
 
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
-
   session: {
     strategy: "jwt",
-    maxAge: 8 * 60 * 60, // 8 horas
+    maxAge: 8 * 60 * 60,
   },
 });

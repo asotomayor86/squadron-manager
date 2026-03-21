@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import { headers } from "next/headers";
 
 interface LogActionParams {
@@ -25,8 +26,8 @@ export async function logAction(params: LogActionParams) {
         accion: params.accion,
         entidad: params.entidad,
         entidadId: params.entidadId ?? null,
-        datosAnteriores: params.datosAnteriores ?? undefined,
-        datosNuevos: params.datosNuevos ?? undefined,
+        datosAnteriores: (params.datosAnteriores ?? undefined) as Prisma.InputJsonValue | undefined,
+        datosNuevos: (params.datosNuevos ?? undefined) as Prisma.InputJsonValue | undefined,
         ip,
         userAgent,
       },

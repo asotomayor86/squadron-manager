@@ -1,6 +1,6 @@
 "use client";
 
-import { hasPermission, hasAnyPermission } from "@/lib/permissions";
+import { hasPermission, hasAnyPermission } from "@/lib/permissions.shared";
 
 interface PermissionGateProps {
   userPermissions: string[];

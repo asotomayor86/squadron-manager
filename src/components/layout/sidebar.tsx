@@ -7,7 +7,7 @@ import {
   LayoutDashboard, ScrollText, ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { PERMISSIONS } from "@/lib/permissions";
+import { PERMISSIONS } from "@/lib/permissions.shared";
 
 function clientHasPermission(userPermissions: string[], required: string) {
   return userPermissions.includes(required);

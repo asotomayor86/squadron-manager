@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/shared/confirm-dialog";
 import { PermissionGate } from "@/components/shared/permission-gate";
 import { deleteUsuarioAction, toggleUsuarioActivoAction } from "@/actions/usuarios.actions";
-import { PERMISSIONS } from "@/lib/permissions";
+import { PERMISSIONS } from "@/lib/permissions.shared";
 import { formatDateShort } from "@/lib/utils";
 
 interface Usuario {

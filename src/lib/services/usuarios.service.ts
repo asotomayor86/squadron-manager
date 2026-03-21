@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import { hashPassword } from "@/lib/hash";
 import type { CreateUsuarioInput, UpdateUsuarioInput } from "@/lib/validations/usuario.schema";
 
-// Selección de campos para listados (sin password)
 const usuarioSelect = {
   id: true,
   nombre: true,
@@ -36,22 +36,20 @@ export async function getUsuarios({
   roleId?: string;
   graduacionId?: string;
 } = {}) {
-  const where = {
+  const where: Prisma.UserWhereInput = {
     ...(activo !== undefined ? { activo } : {}),
     ...(graduacionId ? { graduacionId } : {}),
     ...(search
       ? {
           OR: [
-            { nombre: { contains: search, mode: "insensitive" as const } },
-            { apellidos: { contains: search, mode: "insensitive" as const } },
-            { username: { contains: search, mode: "insensitive" as const } },
-            { email: { contains: search, mode: "insensitive" as const } },
+            { nombre: { contains: search, mode: "insensitive" } },
+            { apellidos: { contains: search, mode: "insensitive" } },
+            { username: { contains: search, mode: "insensitive" } },
+            { email: { contains: search, mode: "insensitive" } },
           ],
         }
       : {}),
-    ...(roleId
-      ? { userRoles: { some: { roleId } } }
-      : {}),
+    ...(roleId ? { userRoles: { some: { roleId } } } : {}),
   };
 
   const [usuarios, total] = await Promise.all([
@@ -97,33 +95,31 @@ export async function createUsuario(data: CreateUsuarioInput) {
 }
 
 export async function updateUsuario(id: string, data: UpdateUsuarioInput) {
-  const updateData: Record<string, unknown> = {
-    nombre: data.nombre,
-    apellidos: data.apellidos,
-    username: data.username,
-    email: data.email,
-    activo: data.activo,
-    graduacionId: data.graduacionId ?? null,
-    observaciones: data.observaciones ?? null,
-  };
-
-  // Solo actualizar password si se proporcionó una nueva
-  if (data.password && data.password.trim() !== "") {
-    updateData.password = await hashPassword(data.password);
-  }
-
   return prisma.$transaction(async (tx) => {
-    // Eliminar roles actuales y asignar los nuevos
     await tx.userRole.deleteMany({ where: { userId: id } });
+
+    // Construimos el data tipado con Prisma.UserUpdateInput
+    const updateData: Prisma.UserUpdateInput = {
+      nombre: data.nombre,
+      apellidos: data.apellidos,
+      username: data.username,
+      email: data.email,
+      activo: data.activo,
+      graduacionId: data.graduacionId ?? null,
+      observaciones: data.observaciones ?? null,
+      userRoles: {
+        create: data.roleIds.map((roleId) => ({ roleId })),
+      },
+    };
+
+    // Añadimos la password solo si se proporcionó una nueva
+    if (data.password && data.password.trim() !== "") {
+      updateData.password = await hashPassword(data.password);
+    }
 
     return tx.user.update({
       where: { id },
-      data: {
-        ...updateData,
-        userRoles: {
-          create: data.roleIds.map((roleId) => ({ roleId })),
-        },
-      },
+      data: updateData,
       select: usuarioSelect,
     });
   });
