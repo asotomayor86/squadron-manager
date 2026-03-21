@@ -8,7 +8,10 @@ export default async function DashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await requireAuth();
-  const { name = "", email = "", roles = [], permissions = [] } = session.user;
+  const name = session.user.name ?? "";
+  const email = session.user.email ?? "";
+  const roles = session.user.roles ?? [];
+  const permissions = session.user.permissions ?? [];
 
   return (
     <div className="flex min-h-screen">
