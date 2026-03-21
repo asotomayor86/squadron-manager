@@ -5,7 +5,7 @@ import { loginAction } from "@/actions/auth.actions";
 import { Shield, Eye, EyeOff, Loader2 } from "lucide-react";
 import { useState } from "react";
 
-const initialState = { error: undefined as string | undefined };
+const initialState: { error?: string } = {};
 
 export default function LoginPage() {
   const [state, formAction, isPending] = useActionState(loginAction, initialState);
