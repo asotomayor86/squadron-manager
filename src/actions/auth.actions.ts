@@ -25,6 +25,7 @@ export async function loginAction(
     // El redirect de Next.js lanza un error que hay que relanzar
     throw error;
   }
+  return {};
 }
 
 export async function logoutAction() {
