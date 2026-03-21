@@ -98,8 +98,8 @@ export async function updateUsuario(id: string, data: UpdateUsuarioInput) {
   return prisma.$transaction(async (tx) => {
     await tx.userRole.deleteMany({ where: { userId: id } });
 
-    // Construimos el data tipado con Prisma.UserUpdateInput
-    const updateData: Prisma.UserUpdateInput = {
+    // UserUncheckedUpdateInput permite usar FKs directas (graduacionId)
+    const updateData: Prisma.UserUncheckedUpdateInput = {
       nombre: data.nombre,
       apellidos: data.apellidos,
       username: data.username,
