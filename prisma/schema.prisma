@@ -1,0 +1,135 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────
+// USUARIOS
+// ─────────────────────────────────────────────
+model User {
+  id            String    @id @default(cuid())
+  nombre        String
+  apellidos     String
+  username      String    @unique
+  email         String    @unique
+  password      String
+  activo        Boolean   @default(true)
+  fechaAlta     DateTime  @default(now())
+  observaciones String?
+
+  graduacionId  String?
+  graduacion    Graduacion? @relation(fields: [graduacionId], references: [id], onDelete: SetNull)
+
+  userRoles     UserRole[]
+  auditLogs     AuditLog[]  @relation("AuditActor")
+
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("users")
+}
+
+// ─────────────────────────────────────────────
+// ROLES (configurables por BD, no hardcodeados)
+// ─────────────────────────────────────────────
+model Role {
+  id          String   @id @default(cuid())
+  nombre      String   @unique
+  descripcion String?
+  activo      Boolean  @default(true)
+
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("roles")
+}
+
+// Relación M:M entre User y Role
+model UserRole {
+  userId     String
+  roleId     String
+  assignedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+
+// ─────────────────────────────────────────────
+// GRADUACIONES / ESTADOS (configurables por BD)
+// ─────────────────────────────────────────────
+model Graduacion {
+  id          String   @id @default(cuid())
+  nombre      String   @unique
+  descripcion String?
+  nivel       Int      @default(0) // Determina el orden de visualización
+  activo      Boolean  @default(true)
+
+  usuarios    User[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("graduaciones")
+}
+
+// ─────────────────────────────────────────────
+// PERMISOS (granulares por módulo y acción)
+// Patrón: "modulo:accion" — ej: "users:create"
+// ─────────────────────────────────────────────
+model Permission {
+  id          String   @id @default(cuid())
+  nombre      String   @unique // "users:read", "roles:delete", etc.
+  descripcion String?
+  modulo      String   // "users" | "roles" | "graduaciones" | "audit" | "admin"
+  accion      String   // "read" | "create" | "update" | "delete" | "access"
+
+  rolePermissions RolePermission[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("permissions")
+}
+
+// Relación M:M entre Role y Permission
+model RolePermission {
+  roleId       String
+  permissionId String
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+// ─────────────────────────────────────────────
+// AUDITORÍA (trazabilidad de todas las acciones)
+// ─────────────────────────────────────────────
+model AuditLog {
+  id              String   @id @default(cuid())
+  actorId         String?
+  accion          String   // "CREATE" | "UPDATE" | "DELETE" | "LOGIN" | "LOGOUT"
+  entidad         String   // "User" | "Role" | "Graduacion"
+  entidadId       String?
+  datosAnteriores Json?
+  datosNuevos     Json?
+  ip              String?
+  userAgent       String?
+
+  actor           User?    @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  createdAt       DateTime @default(now())
+
+  @@map("audit_logs")
+}

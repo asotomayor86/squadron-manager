@@ -1,0 +1,23 @@
+# Dependencias
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Variables de entorno — NUNCA subir a GitHub
+.env
+.env.local
+.env.*.local
+
+# Prisma
+prisma/*.db
+prisma/*.db-journal
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+*.log
