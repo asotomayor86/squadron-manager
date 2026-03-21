@@ -76,9 +76,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
     // Exponemos roles y permisos en la sesión del cliente
     async session({ session, token }) {
-      session.user.id = token.id;
-      session.user.roles = token.roles;
-      session.user.permissions = token.permissions;
+      session.user.id = token.id as string;
+      session.user.roles = (token.roles as string[]) ?? [];
+      session.user.permissions = (token.permissions as string[]) ?? [];
       return session;
     },
   },
