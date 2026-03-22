@@ -18,6 +18,9 @@ prisma/*.db-journal
 .DS_Store
 Thumbs.db
 
+# Supabase
+supabase/.temp/
+
 # Editor
 .vscode/
 *.log
