@@ -19,9 +19,9 @@ export const authConfig: NextAuthConfig = {
       // Las rutas de Auth.js siempre pasan
       if (isApiAuth) return true;
 
-      // Si está en login y ya autenticado → redirigir al dashboard
+      // Si está en login y ya autenticado → redirigir a bienvenida
       if (isAuthPage) {
-        if (isLoggedIn) return Response.redirect(new URL("/", nextUrl));
+        if (isLoggedIn) return Response.redirect(new URL("/bienvenida", nextUrl));
         return true;
       }
 

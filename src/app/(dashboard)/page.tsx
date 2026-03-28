@@ -48,24 +48,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Bienvenida */}
-      <div className="flex flex-col items-center justify-center py-10 text-center">
-        <h1 className="text-5xl font-black tracking-widest leading-tight">
-          ESCUADRON
-        </h1>
-        <h1 className="text-5xl font-black tracking-widest leading-tight">
-          MADDOG
-        </h1>
-        <img
-          src="https://www.escuadronmaddog.com/assets/images/logo.svg"
-          alt="Escuadron Maddog"
-          className="my-8 w-1/2 max-w-sm"
-        />
-        <p className="text-2xl font-semibold">
-          Bienvenido, {session.user.name?.split(" ")[0]}
-        </p>
-      </div>
-
       {/* Stats grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat) => (

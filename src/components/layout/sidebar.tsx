@@ -22,9 +22,15 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   {
+    label: "Bienvenida",
+    href: "/bienvenida",
+    icon: LayoutDashboard,
+  },
+  {
     label: "Dashboard",
     href: "/",
     icon: LayoutDashboard,
+    permission: PERMISSIONS.ADMIN_ACCESS,
   },
   {
     label: "Usuarios",
