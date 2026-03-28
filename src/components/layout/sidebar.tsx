@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  Shield, Users, ShieldCheck, GraduationCap,
+  Users, ShieldCheck, GraduationCap,
   LayoutDashboard, ScrollText, ChevronRight,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -63,12 +63,14 @@ export function Sidebar({ userPermissions }: SidebarProps) {
     <aside className="flex flex-col w-64 min-h-screen bg-slate-900 text-slate-100">
       {/* Logo */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-slate-700">
-        <div className="bg-primary/20 p-2 rounded-lg">
-          <Shield className="h-6 w-6 text-primary" />
-        </div>
+        <img
+          src="https://www.escuadronmaddog.com/assets/images/logo.svg"
+          alt="Maddog logo"
+          className="h-10 w-10 shrink-0"
+        />
         <div>
-          <p className="font-bold text-sm leading-tight">Squadron</p>
-          <p className="text-xs text-slate-400 leading-tight">Manager</p>
+          <p className="font-black text-xl leading-tight tracking-wide">MADDOG</p>
+          <p className="text-xs text-slate-400 leading-tight tracking-widest">ESCUADRON</p>
         </div>
       </div>
 
